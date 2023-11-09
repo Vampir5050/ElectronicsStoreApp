@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Product>
+
+    @if(TempData.ContainsKey("status"))
+{
+    {
+
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Messages!</strong>@TempData["status"].
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+}
+
+@if (Model!=null&&Model.Count()>0)
+{
+    <div class="card" style="width: 18rem;">
+        @foreach(var item in Model)
+        {
+            <h4 class="card-title text-center">@item.Title</h4>
+            
+            <img src="@item.ImageUrl" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title text-center">The @item.Year model</h5>
+                <p class="card-text">@item.Description</p>
+            </div>
+        }
+       
+    </div>
+}
+
