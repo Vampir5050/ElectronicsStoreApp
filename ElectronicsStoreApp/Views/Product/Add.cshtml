@@ -6,7 +6,7 @@
 <h1>AddProduct</h1>
 
 
-<form asp-controller="Product" asp-action="Add" method="post">
+<form asp-controller="Product" asp-action="Add" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="All" class="text-danger">
     </div>
     <div class="form-group">
@@ -14,15 +14,22 @@
         <input asp-for="Title" class="form-control" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
+      <div class="form-group">
+        <label asp-for="CategoryId"></label>
+    <select asp-for="CategoryId" asp-items="ViewBag.categories" class="form-select" aria-label="Default select example"></select>
+    </div>
     <div class="form-group">
         <label asp-for="Year"></label>
         <input asp-for="Year" min="1990" max="2999" class="form-control" />
         <span asp-validation-for="Year" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="ImageUrl"></label>
-        <input asp-for="ImageUrl" class="form-control" />
-        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        <label asp-for="ProductTags"></label>
+        <select asp-for="ProductTags" asp-items="ViewBag.tags" multiple class="form-select chosen-select" aria-label="Default select example"></select>
+    </div>
+    <div class="mb-3">
+        <label for="formFile" class="form-label">Default file input example</label>
+        <input class="form-control" name="Image" type="file" id="formFile">
     </div>
     <div class="form-group">
         <label asp-for="Description"></label>
@@ -35,5 +42,21 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial"></partial>
+
+
+    <script src="https://cdn.tiny.cloud/1/g9zqwp7tm78tvvxftg4se9v6vhuujkn4dh5xzh6kfr7kxcg6/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script>
+        $(".chosen-select").chosen({ no_results_text: "Oops, nothing found!" });
+
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+        });
+    </script>
+
+
 }
+
 

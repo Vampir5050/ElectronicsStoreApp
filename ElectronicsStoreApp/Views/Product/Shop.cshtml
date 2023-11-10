@@ -1,6 +1,8 @@
-﻿@model IEnumerable<Product>
+﻿@using ElectronicsStoreApp.ViewModels;
 
-    @if(TempData.ContainsKey("status"))
+@model IndexVewModel
+
+@if (TempData.ContainsKey("status"))
 {
     {
 
@@ -11,20 +13,36 @@
     }
 }
 
-@if (Model!=null&&Model.Count()>0)
+@if (Model.Products != null && Model.Products.Count() > 0)
 {
-    <div class="card" style="width: 18rem;">
-        @foreach(var item in Model)
-        {
-            <h4 class="card-title text-center">@item.Title</h4>
-            
-            <img src="@item.ImageUrl" class="card-img-top" alt="...">
-            <div class="card-body">
-                <h5 class="card-title text-center">The @item.Year model</h5>
-                <p class="card-text">@item.Description</p>
+    <div class="album py-5 bg-body-tertiary">
+        <div class="container">
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                @foreach (var item in Model.Products)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <h3 class="text-center">@item.Title</h3>
+                            <img class="card-img" src="@item.ImageUrl" width="100%" height="345" alt="...">
+                            <h6 class="text-center">The @item.Year model</h6>
+                            <div class="card-body">
+                                <p class="card-text">@Html.Raw(@item.Description)...</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    </div>
+                                    <div>
+                                        <small class="text-body-secondary">@item.Category.Name</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        }
-       
+        </div>
     </div>
 }
 

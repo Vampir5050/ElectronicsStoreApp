@@ -12,6 +12,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 });
 
 var app = builder.Build();
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+{
+    Seed.SeedData(app);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -30,6 +34,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Product}/{action=Shop}/{id?}");
 
 app.Run();
