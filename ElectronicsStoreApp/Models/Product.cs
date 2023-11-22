@@ -27,6 +27,7 @@ namespace ElectronicsStoreApp.Models
         [Display(Name ="Photo url:")]
         [DataType(DataType.Upload)]
         public string ImageUrl { get; set; }
+        
         public decimal Price { get; set; }
 
         [ForeignKey("Category")]

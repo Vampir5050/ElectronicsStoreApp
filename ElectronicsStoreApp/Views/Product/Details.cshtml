@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewData["Title"] = "Details";
+}
+@model Product
+
+<h1>@Model.Category.Name</h1>
+
+<div class="card">
+    
+    <div class="card-header">
+        <h2>@Model.Title </h2>
+    </div>
+    <div class="card-body">
+        <img src="@Model.ImageUrl" />
+        <h4 class="card-title">@Model.Price Rubles</h4>
+        <h5 class="card-title">The @Model.Year model </h5>
+        <p class="card-text">@Html.Raw(Model.Description)</p>
+        @foreach(var item in @Model.ProductTags)
+        {
+            <span>#@item.Tag.Name</span>
+        }
+        <br />
+        <a asp-action="Shop" asp-controller="Product" class="btn btn-primary">Back</a>
+    </div>
+</div>
