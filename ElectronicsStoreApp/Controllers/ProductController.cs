@@ -20,17 +20,24 @@ namespace ElectronicsStoreApp.Controllers
             _context = context;
         }
 
-     
-        [HttpGet]
-        public ActionResult Shop()
-        {
-            IEnumerable<Product> products = _context.Products.ToList();
-            IEnumerable<Category> categories = _context.Categories.ToList();
-            IEnumerable<Tag> tags = _context.Tags.ToList();
 
-            foreach (var item in products)
+        [HttpGet]
+        public ActionResult Shop(int? categoryId = null, int? tagId = null, int page = 1)
+        {
+            var product = _context.Products.Include(x => x.ProductTags).ThenInclude(x => x.Tag).Include(x => x.Category).OrderByDescending(x => x.Id);
+            if (categoryId != null)
             {
-                if (item.Description.Length>100)
+                product = (IOrderedQueryable<Product>)product.Where(x => x.CategoryId == categoryId);
+
+            }
+            if (tagId != null)
+            {
+                product = (IOrderedQueryable<Product>)product.Where(x => x.ProductTags.Any(x => x.TagId == tagId));
+            }
+
+            foreach (var item in product)
+            {
+                if (item.Description.Length > 100)
                 {
                     int lastSpace = item.Description.LastIndexOf(' ', 100);
                     if (lastSpace > 0)
@@ -44,7 +51,22 @@ namespace ElectronicsStoreApp.Controllers
                 }
             }
 
-            IndexVewModel model = new IndexVewModel() { Categories = categories, Products = products, Tags = tags };
+
+            var model = new IndexVewModel();
+
+            int totalP = (int)Math.Ceiling(product.Count() / (double)model.LimitPage);
+            product = (IOrderedQueryable<Product>)product.Skip((page - 1) * model.LimitPage).Take(model.LimitPage);
+
+
+            model.Categories = _context.Categories;
+            model.Products = product;
+            model.Tags = _context.Tags;
+            model.RecentPosts = _context.Products.OrderByDescending(x => x.Id).Take(model.LimitPage);
+            model.CurrentPages = page;
+            model.TotalPages = totalP;
+            model.SelectedCategoryId = categoryId;
+            model.SelectedTagId = tagId;
+
 
             return View(model);
         }
@@ -60,7 +82,7 @@ namespace ElectronicsStoreApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(Product product, IFormFile Image, int[]tags)
+        public async Task<IActionResult> Add(Product product, IFormFile Image, int[] tags)
         {
             try
             {
@@ -99,9 +121,9 @@ namespace ElectronicsStoreApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Product product, IFormFile Image, int[]tags)
+        public async Task<IActionResult> Edit(Product product, IFormFile Image, int[] tags)
         {
-            if(Image != null)
+            if (Image != null)
             {
                 var path = await FileUploadHelper.UploadAsync(Image);
                 product.ImageUrl = path;
@@ -110,7 +132,7 @@ namespace ElectronicsStoreApp.Controllers
             await _context.SaveChangesAsync();
 
             var productWithTags = await _context.Products.Include(x => x.ProductTags).FirstOrDefaultAsync(x => x.Id == product.Id);
-            _context.UpdateManyToMany( productWithTags.ProductTags,tags.Select(x => new ProductTag { ProductId = product.Id, TagId = x }),x => x.TagId);
+            _context.UpdateManyToMany(productWithTags.ProductTags, tags.Select(x => new ProductTag { ProductId = product.Id, TagId = x }), x => x.TagId);
             await _context.SaveChangesAsync();
             return RedirectToAction("Shop");
 
@@ -122,6 +144,9 @@ namespace ElectronicsStoreApp.Controllers
             var product = await _context.Products.Include(x => x.ProductTags).ThenInclude(x => x.Tag).Include(x => x.Category).FirstOrDefaultAsync(product => product.Id == id);
             return View(product);
         }
+
+
+
 
     }
 }

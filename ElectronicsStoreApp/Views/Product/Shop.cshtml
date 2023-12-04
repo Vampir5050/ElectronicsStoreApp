@@ -2,6 +2,48 @@
 
 @model IndexVewModel
 
+
+<div class="row">
+
+    <div class="col-2">
+        <div class="row">
+            <h3>Categories</h3>
+            <hr />
+            <div class="list-group">
+                @if (Model.Categories != null)
+                {
+                    foreach (var item in @Model.Categories)
+                    {
+                        <a asp-action="Shop" asp-controller="Product" asp-route-categoryId="@item.Id" asp-route-tagId="@Model.SelectedTagId"
+                             class="list-group-item list-group-item-action @(Model.SelectedCategoryId==item.Id ? "active" : ' ') ">@item.Name</a>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <div class="row">
+            <h3>Tags</h3>
+            <hr />
+            <div class="list-group">
+                @if (Model.Tags != null)
+                {
+                    foreach (var item in @Model.Tags)
+                    {
+                        <a asp-action="Shop" asp-controller="Product" asp-route-tagId="@item.Id" asp-route-categoryId="@Model.SelectedCategoryId"
+                           class="list-group-item list-group-item-action @(Model.SelectedTagId==item.Id ? "active" : ' ') ">@item.Name</a>
+                    }
+                }
+
+            </div>
+        </div>
+        <br />
+        <a asp-controller="Product" asp-action="Shop" class="btn btn-outline-info">Reset</a>
+    </div>
+
+
+
+<div class="col-10">
 @if (TempData.ContainsKey("status"))
 {
     {
@@ -13,37 +55,61 @@
     }
 }
 
-@if (Model.Products != null && Model.Products.Count() > 0)
-{
-    <div class="album py-5 bg-body-tertiary">
-        <div class="container">
 
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                @foreach (var item in Model.Products)
-                {
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <h3 class="text-center">@item.Title</h3>
-                            <img class="card-img" src="@item.ImageUrl" width="100%" height="345" alt="...">
-                            <h4 class="text-center">@item.Price Rubles</h4>
-                            <h6 class="text-center">The @item.Year model</h6>
-                            <div class="card-body">
-                                <p class="card-text">@Html.Raw(@item.Description)...</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <a asp-action="Details" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
-                                        <a asp-action="Edit" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+    @if (Model.Products != null && Model.Products.Count() > 0)
+    {
+        <div class="album py-5 bg-body-tertiary">
+            <div class="container">
+
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    @foreach (var item in Model.Products)
+                    {
+                        <div class="col">
+                            <div class="card shadow-sm">
+                                <div class="flex-column">
+                                @foreach(var tag in item.ProductTags)
+                                    {
+                                       <a href="#" >#@tag.Tag.Name</a>
+                                    }
                                     </div>
-                                    <div>
-                                        <small class="text-body-secondary">@item.Category.Name</small>
+                                <h3 class="text-center">@item.Title</h3>
+                                <img class="card-img" src="@item.ImageUrl" width="100%" height="345" alt="...">
+                                <h4 class="text-center">@item.Price Rubles</h4>
+                                <h6 class="text-center">The @item.Year model</h6>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.Raw(@item.Description)...</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <a asp-action="Details" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                                            <a asp-action="Edit" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        </div>
+                                        <div>
+                                            <small class="text-body-secondary">@item.Category.Name</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
-    </div>
-}
+        }
+        else if (@Model.Products.Count() == 0)
+        {
+            <h3>Not found</h3>
+        }
+</div>
+
+</div>
+
+<vc:pagination current-page="@Model.CurrentPages"
+               total-pages="@Model.TotalPages"
+               limit="@Model.LimitPage"
+               tag-id="@Model.SelectedTagId"
+               category-id="@Model.SelectedCategoryId"
+               action="Shop"
+               controller="Product"></vc:pagination>
+
+
 
